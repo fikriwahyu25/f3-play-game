@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F3 PLAY GAME</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f2027;
+color:white;
+text-align:center;
+margin:0;
+}
+
+h1{
+text-shadow:0 0 20px cyan;
+}
+
+.panel{
+margin:20px;
+}
+
+input{
+padding:6px;
+margin:4px;
+border-radius:5px;
+border:none;
+}
+
+button{
+padding:8px 12px;
+margin:4px;
+border:none;
+border-radius:6px;
+background:cyan;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+background:orange;
+}
+
+#timerContainer{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:25px;
+}
+
+/* kotak timer */
+
+.timer{
+background:#000;
+border:4px solid cyan;
+border-radius:20px;
+padding:25px;
+width:320px;
+height:180px;
+box-shadow:0 0 25px cyan;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
+
+.time{
+font-size:65px;
+font-weight:bold;
+}
+
+/* countdown merah */
+
+.danger{
+color:red;
+animation:blink 0.6s infinite;
+}
+
+@keyframes blink{
+0%{opacity:1}
+50%{opacity:0.3}
+100%{opacity:1}
+}
+
+/* efek timer habis */
+
+.finish{
+border-color:red;
+animation:flash 0.5s 6;
+}
+
+@keyframes flash{
+0%{background:#200}
+50%{background:#900}
+100%{background:#200}
+}
+
+/* progress bar */
+
+.progress{
+height:12px;
+background:#333;
+border-radius:10px;
+overflow:hidden;
+}
+
+.bar{
+height:12px;
+background:lime;
+width:100%;
+transition:width 1s linear;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>🎮 F3 PLAY GAME</h1>
+
+<div class="panel">
+
+Nama
+<input id="name">
+
+Jam
+<input id="hour" type="number" value="0" style="width:60px">
+
+Menit
+<input id="minute" type="number" value="0" style="width:60px">
+
+Detik
+<input id="second" type="number" value="10" style="width:60px">
+
+<br>
+
+<button onclick="addTimer()">Tambah Timer</button>
+<button onclick="stopAlarm()">Stop Alarm</button>
+
+</div>
+
+<div id="timerContainer"></div>
+
+<audio id="alarm" loop>
+<source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+</audio>
+
+<script>
+
+let timers=[]
+let interval={}
+
+function addTimer(){
+
+let name=document.getElementById("name").value || "Timer"
+
+let total=
+(parseInt(hour.value)||0)*3600+
+(parseInt(minute.value)||0)*60+
+(parseInt(second.value)||0)
+
+let id=Date.now()
+
+timers.push({id,total,start:total})
+
+let div=document.createElement("div")
+div.className="timer"
+div.id="timer"+id
+
+div.innerHTML=`
+
+<h3>${name}</h3>
+
+<div class="progress">
+<div class="bar" id="bar${id}"></div>
+</div>
+
+<div class="time" id="time${id}">
+${format(total)}
+</div>
+
+<div>
+<button onclick="startTimer(${id})">▶</button>
+<button onclick="pauseTimer(${id})">⏸</button>
+<button onclick="resetTimer(${id})">🔄</button>
+<button onclick="deleteTimer(${id})">🗑</button>
+</div>
+
+`
+
+timerContainer.appendChild(div)
+
+}
+
+function format(sec){
+
+let h=Math.floor(sec/3600)
+let m=Math.floor((sec%3600)/60)
+let s=sec%60
+
+return String(h).padStart(2,'0')+":"+
+String(m).padStart(2,'0')+":"+
+String(s).padStart(2,'0')
+
+}
+
+function startTimer(id){
+
+let t=timers.find(x=>x.id==id)
+
+if(interval[id]) return
+
+interval[id]=setInterval(()=>{
+
+if(t.total>0){
+
+t.total--
+
+let timeEl=document.getElementById("time"+id)
+
+timeEl.innerText=format(t.total)
+
+if(t.total<=10){
+timeEl.classList.add("danger")
+}
+
+let percent=(t.total/t.start)*100
+document.getElementById("bar"+id).style.width=percent+"%"
+
+}else{
+
+clearInterval(interval[id])
+
+document.getElementById("alarm").play()
+
+let box=document.getElementById("timer"+id)
+
+box.classList.add("finish")
+
+setTimeout(()=>{
+box.style.background="#400"
+},3000)
+
+}
+
+},1000)
+
+}
+
+function pauseTimer(id){
+
+clearInterval(interval[id])
+interval[id]=null
+
+}
+
+function resetTimer(id){
+
+let t=timers.find(x=>x.id==id)
+
+pauseTimer(id)
+
+t.total=t.start
+
+document.getElementById("time"+id).innerText=format(t.total)
+
+document.getElementById("bar"+id).style.width="100%"
+
+let box=document.getElementById("timer"+id)
+
+box.classList.remove("finish")
+box.style.background="#000"
+
+}
+
+function deleteTimer(id){
+
+pauseTimer(id)
+
+document.getElementById("timer"+id).remove()
+
+timers=timers.filter(t=>t.id!=id)
+
+}
+
+function stopAlarm(){
+
+let a=document.getElementById("alarm")
+
+a.pause()
+a.currentTime=0
+
+}
+
+</script>
+
+</body>
+</html>
