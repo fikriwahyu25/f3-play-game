@@ -2,12 +2,10 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Video TikTok + Game Timer (Admin)</title>
-
+<title>F3playgame</title>
 <style>
-/* BACKGROUND ANIMASI */
 body{
-  font-family:Arial;
+  font-family:Arial, sans-serif;
   margin:0;
   color:white;
   background:linear-gradient(270deg,#020024,#090979,#00d4ff);
@@ -19,286 +17,273 @@ body{
   50%{background-position:100% 50%;}
   100%{background-position:0% 50%;}
 }
+.container{ display:flex; height:100vh; }
+.video-area{ width:50%; padding:20px; box-sizing:border-box; }
+.video-area .tiktok-embed{ width:100%; max-width:480px; margin:auto; }
+.timer-area{ width:50%; padding:20px; box-sizing:border-box; overflow:auto; }
 
-/* LAYOUT FLEX */
-.container{
-  display:flex;
-  height:100vh;
-}
-
-/* VIDEO AREA */
-.video-area{
-  width:50%;
-  padding:20px;
-  box-sizing:border-box;
-}
-.video-area .tiktok-embed{
-  width:100%;
-  max-width:480px;
-  margin:auto;
-}
-
-/* TIMER AREA */
-.timer-area{
-  width:50%;
-  padding:20px;
-  box-sizing:border-box;
-  overflow:auto;
-}
-
-/* PANEL INPUT TIMER */
 .panel{
-  background:rgba(0,0,0,0.5);
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:20px;
+  background:rgba(0,0,0,0.5); padding:15px; border-radius:12px; margin-bottom:20px;
+  font-size:16px;
 }
-input{
+.timer-input{
+  width:60px;
   padding:6px;
   margin:4px;
-  border-radius:5px;
+  border-radius:14px;
   border:none;
+  background: rgba(255,255,255,0.2);
+  color:white;
+  text-align:center;
+  font-weight:bold;
+  font-size:18px;
+  box-shadow:0 4px 12px rgba(0,255,255,0.5);
+  backdrop-filter: blur(6px);
+  transition: 0.3s;
 }
+.timer-input:focus{ outline:none; box-shadow:0 0 20px cyan; background: rgba(255,255,255,0.3); }
+
 button{
-  padding:7px 12px;
-  margin:4px;
+  padding:6px 12px;
+  margin:3px;
+  font-size:14px;
+  border-radius:8px;
   border:none;
-  border-radius:6px;
   background:cyan;
   font-weight:bold;
   cursor:pointer;
+  box-shadow:0 0 10px cyan;
+  transition:0.3s;
 }
-button:hover{
-  background:orange;
-}
+button:hover{ background:orange; box-shadow:0 0 20px orange; }
 
-/* KOTAK TIMER */
-#timerContainer{
-  display:flex;
-  flex-wrap:wrap;
-  gap:15px;
-}
+#timerContainer{ display:flex; flex-wrap:wrap; gap:15px; }
+
 .timer{
-  background:rgba(0,0,0,0.7);
-  border:4px solid cyan;
-  border-radius:18px;
-  width:240px;
-  height:170px;
+  background:rgba(0,0,0,0.5);
+  border:5px solid cyan;
+  border-radius:20px;
+  width:250px;
+  height:220px;
   padding:12px;
-  box-shadow:0 0 20px cyan;
+  box-shadow:0 0 25px cyan;
   display:flex;
   flex-direction:column;
   justify-content:space-between;
   text-align:center;
+  font-size:16px;
 }
+.locked{ border-color:orange; box-shadow:0 0 25px orange; }
+.time{ font-size:28px; font-weight:bold; margin-top:6px; }
+.danger{ color:red; animation:blink 0.6s infinite; }
+@keyframes blink{ 0%{opacity:1;} 50%{opacity:0.3;} 100%{opacity:1;} }
+.finish{ background:#400; border-color:red; animation:flash 0.5s infinite; }
+@keyframes flash{ 0%{box-shadow:0 0 10px red;} 50%{box-shadow:0 0 40px red;} 100%{box-shadow:0 0 10px red;} }
 
-/* LOCKED TIMER */
-.locked{
-  border-color:orange;
-  box-shadow:0 0 20px orange;
+.timer-buttons{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:5px;
 }
-
-/* ANGKA TIMER */
-.time{
-  font-size:34px;
-  font-weight:bold;
-}
-
-/* 10 DETIK TERAKHIR BERKEDIP */
-.danger{
-  color:red;
-  animation:blink 0.6s infinite;
-}
-@keyframes blink{
-  0%{opacity:1;}
-  50%{opacity:0.3;}
-  100%{opacity:1;}
-}
-
-/* TIMER HABIS BERKEDIP TERUS */
-.finish{
-  background:#400;
-  border-color:red;
-  animation:flash 0.5s infinite;
-}
-@keyframes flash{
-  0%{box-shadow:0 0 10px red;}
-  50%{box-shadow:0 0 35px red;}
-  100%{box-shadow:0 0 10px red;}
-}
-
+.timer-buttons button{ flex:1 1 45px; }
 </style>
 </head>
-
 <body>
 
 <div class="container">
-
-  <!-- VIDEO TIKTOK -->
   <div class="video-area">
-    <h2>🎬 Video</h2>
-    <blockquote class="tiktok-embed" cite="">
-      <section> </section>
+    <h2>🎬 Real Video</h2>
+    <blockquote class="tiktok-embed" cite="" data-video-id="" style="width:100%; max-width:480px;">
+      <section></section>
     </blockquote>
     <script async src="https://www.tiktok.com/embed.js"></script>
   </div>
 
-  <!-- TIMER AREA -->
   <div class="timer-area">
     <h2>🎮 Game Timer</h2>
 
     <div class="panel">
-      <h3>Admin Timer</h3>
-      Password Admin
-      <input id="adminPassword" type="password" placeholder="Masukkan password">
+      <h3>F3 PLAY GAME</h3>
+      Password: <input id="adminPassword" type="password" class="timer-input">
       <br>
-      Nama
-      <input id="name">
-      Jam
-      <input id="hour" type="number" value="0" style="width:60px">
-      Menit
-      <input id="minute" type="number" value="0" style="width:60px">
-      Detik
-      <input id="second" type="number" value="10" style="width:60px">
+      Nama: <input id="name" class="timer-input">
+      Jam: <input id="hour" type="number" value="0" class="timer-input">
+      Menit: <input id="minute" type="number" value="0" class="timer-input">
+      Detik: <input id="second" type="number" value="10" class="timer-input">
       <br>
       <button onclick="addTimer()">Tambah Timer</button>
       <button onclick="stopAlarm()">Stop Alarm</button>
     </div>
 
     <div id="timerContainer"></div>
-
   </div>
-
 </div>
 
-<!-- ALARM -->
 <audio id="alarm" loop>
   <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
 </audio>
 
 <script>
-// DATA TIMER
-let timers = [];
-let interval = {};
-let lockedTimers = {};
-const ADMIN_PASS = "admin"; // Password admin huruf kecil semua
+let timers=[];
+let interval={};
+const ADMIN_PASS="admin";
 
-// FORMAT WAKTU hh:mm:ss
 function format(sec){
-  let h = Math.floor(sec/3600);
-  let m = Math.floor((sec%3600)/60);
-  let s = sec%60;
+  let h=Math.floor(sec/3600), m=Math.floor((sec%3600)/60), s=sec%60;
   return String(h).padStart(2,'0')+":"+String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
 }
 
-// TAMBAH TIMER (ADMIN)
-function addTimer(){
-  const password = document.getElementById("adminPassword").value;
-  if(password !== ADMIN_PASS){
-    alert("Hanya admin yang bisa menambahkan timer");
-    return;
-  }
-
-  let name = document.getElementById("name").value || "Timer";
-  let total = (parseInt(hour.value)||0)*3600 + (parseInt(minute.value)||0)*60 + (parseInt(second.value)||0);
-  let id = Date.now();
-  timers.push({id,total,start:total});
-
-  let div = document.createElement("div");
-  div.className = "timer";
-  div.id = "timer"+id;
-
-  div.innerHTML = `
-    <h3>${name}</h3>
-    <div class="time" id="time${id}">${format(total)}</div>
-    <div>
-      <button onclick="startTimer(${id})">▶</button>
-      <button onclick="pauseTimer(${id})">⏸</button>
-      <button onclick="resetTimer(${id}, '${password}')">🔄</button>
-      <button onclick="lockTimer(${id}, '${password}')">🔒</button>
-      <button onclick="deleteTimer(${id}, '${password}')">🗑</button>
-    </div>
-  `;
-  timerContainer.appendChild(div);
+// Simpan timer dengan waktu akhir dan lock status
+function saveTimers(){
+  const data = timers.map(t=>{
+    return {
+      id: t.id,
+      name: t.name,
+      total: t.total,
+      start: t.start,
+      endTime: t.endTime,
+      locked: t.locked || false
+    };
+  });
+  localStorage.setItem("timersData", JSON.stringify(data));
 }
 
-// START TIMER (SEMUA BISA PLAY)
-function startTimer(id){
-  let t = timers.find(x=>x.id==id);
-  if(interval[id]) return;
+function loadTimers(){
+  const saved = localStorage.getItem("timersData");
+  if(saved && JSON.parse(saved).length>0){
+    timers=JSON.parse(saved);
+    timers.forEach(t=>{
+      // Jika ada endTime, hitung detik tersisa
+      if(t.endTime){
+        const diff=Math.floor((t.endTime - Date.now())/1000);
+        t.total=diff>0 ? diff : 0;
+        if(diff>0) startTimer(t.id);
+      }
+      createTimerDiv(t);
+      if(t.locked) document.getElementById("timer"+t.id).classList.add("locked");
+    });
+  }
+}
 
-  interval[id] = setInterval(()=>{
-    if(t.total>0){
-      t.total--;
-      let timeEl = document.getElementById("time"+id);
-      timeEl.innerText = format(t.total);
-      if(t.total<=10) timeEl.classList.add("danger");
-    }
-    else{
+function createTimerDiv(t){
+  if(document.getElementById("timer"+t.id)) return;
+  let div=document.createElement("div");
+  div.className="timer";
+  div.id="timer"+t.id;
+
+  let h=Math.floor(t.total/3600);
+  let m=Math.floor((t.total%3600)/60);
+  let s=t.total%60;
+
+  div.innerHTML=`
+    <h3>${t.name}</h3>
+    <div>
+      Jam: <input type="number" min="0" value="${h}" class="timer-input" id="hour${t.id}">
+      Menit: <input type="number" min="0" value="${m}" class="timer-input" id="minute${t.id}">
+      Detik: <input type="number" min="0" value="${s}" class="timer-input" id="second${t.id}">
+    </div>
+    <div class="time" id="time${t.id}">${format(t.total)}</div>
+    <div class="timer-buttons">
+      <button onclick="startTimer(${t.id})">▶</button>
+      <button onclick="pauseTimer(${t.id})">⏸</button>
+      <button onclick="resetTimer(${t.id})">🔄</button>
+      <button onclick="lockTimer(${t.id})">🔒</button>
+      <button onclick="deleteTimer(${t.id})">🗑</button>
+    </div>
+  `;
+  document.getElementById("timerContainer").appendChild(div);
+
+  ['hour','minute','second'].forEach(type=>{
+    document.getElementById(type+t.id).addEventListener('change',()=>{
+      const pass = document.getElementById("adminPassword").value;
+      if(pass!==ADMIN_PASS){ alert("Hanya admin!"); return; }
+      let h=parseInt(document.getElementById("hour"+t.id).value)||0;
+      let m=parseInt(document.getElementById("minute"+t.id).value)||0;
+      let s=parseInt(document.getElementById("second"+t.id).value)||0;
+      t.total=h*3600+m*60+s;
+      t.start=t.total;
+      t.endTime=null;
+      saveTimers();
+      document.getElementById("time"+t.id).innerText=format(t.total);
+    });
+  });
+}
+
+function addTimer(){
+  const pass=document.getElementById("adminPassword").value;
+  if(pass!==ADMIN_PASS){ alert("Hanya admin"); return; }
+  let name=document.getElementById("name").value||"Timer";
+  let total=(parseInt(hour.value)||0)*3600+(parseInt(minute.value)||0)*60+(parseInt(second.value)||0);
+  let id=Date.now();
+  let t={id,total,start:total,name,endTime:null,locked:false};
+  timers.push(t);
+  createTimerDiv(t);
+  saveTimers();
+}
+
+function startTimer(id){
+  let t=timers.find(x=>x.id==id);
+  if(interval[id]) return;
+  if(!t.endTime) t.endTime=Date.now() + t.total*1000;
+  interval[id]=setInterval(()=>{
+    let diff=Math.floor((t.endTime - Date.now())/1000);
+    t.total=diff>0 ? diff : 0;
+    let el=document.getElementById("time"+id);
+    el.innerText=format(t.total);
+    if(t.total<=10) el.classList.add("danger");
+    if(t.total<=0){
       clearInterval(interval[id]);
       document.getElementById("alarm").play();
-      let box = document.getElementById("timer"+id);
-      box.classList.add("finish"); // berkedip terus
+      document.getElementById("timer"+id).classList.add("finish");
     }
+    saveTimers();
   },1000);
 }
 
-// PAUSE TIMER (SEMUA BISA PAUSE)
 function pauseTimer(id){
   clearInterval(interval[id]);
-  interval[id] = null;
+  interval[id]=null;
+  let t=timers.find(x=>x.id==id);
+  if(t.total>0) t.endTime=null;
 }
 
-// RESET TIMER (HANYA ADMIN)
-function resetTimer(id, password){
-  if(password !== ADMIN_PASS){
-    alert("Hanya admin yang bisa reset timer");
-    return;
-  }
-  let t = timers.find(x=>x.id == id);
+function resetTimer(id){
+  const pass=document.getElementById("adminPassword").value;
+  if(pass!==ADMIN_PASS){ alert("Hanya admin"); return; }
+  let t=timers.find(x=>x.id==id);
   pauseTimer(id);
-  t.total = t.start;
-  document.getElementById("time"+id).innerText = format(t.total);
-
-  let box = document.getElementById("timer"+id);
-  box.classList.remove("finish");
+  t.total=t.start;
+  t.endTime=null;
+  document.getElementById("time"+id).innerText=format(t.total);
+  document.getElementById("timer"+id).classList.remove("finish");
   document.getElementById("time"+id).classList.remove("danger");
+  saveTimers();
 }
 
-// DELETE TIMER (HANYA ADMIN)
-function deleteTimer(id, password){
-  if(password !== ADMIN_PASS){
-    alert("Hanya admin yang bisa menghapus timer");
-    return;
-  }
+function deleteTimer(id){
+  const pass=document.getElementById("adminPassword").value;
+  if(pass!==ADMIN_PASS){ alert("Hanya admin"); return; }
   pauseTimer(id);
   document.getElementById("timer"+id).remove();
-  timers = timers.filter(t => t.id!=id);
+  timers=timers.filter(t=>t.id!=id);
+  saveTimers();
 }
 
-// LOCK TIMER (HANYA ADMIN)
-function lockTimer(id, password){
-  if(password !== ADMIN_PASS){
-    alert("Hanya admin yang bisa mengunci timer");
-    return;
-  }
-  let box = document.getElementById("timer"+id);
-  if(!lockedTimers[id]){
-    lockedTimers[id] = true;
-    box.classList.add("locked");
-  } else {
-    lockedTimers[id] = false;
-    box.classList.remove("locked");
-  }
+function lockTimer(id){
+  const pass=document.getElementById("adminPassword").value;
+  if(pass!==ADMIN_PASS){ alert("Hanya admin"); return; }
+  let t=timers.find(x=>x.id==id);
+  let box=document.getElementById("timer"+id);
+  t.locked=!t.locked;
+  if(t.locked) box.classList.add("locked");
+  else box.classList.remove("locked");
+  saveTimers();
 }
 
-// STOP ALARM (SEMUA BISA)
-function stopAlarm(){
-  let a = document.getElementById("alarm");
-  a.pause();
-  a.currentTime = 0;
-}
+function stopAlarm(){ let a=document.getElementById("alarm"); a.pause(); a.currentTime=0; }
+
+window.onload = loadTimers;
 </script>
-
 </body>
 </html>
