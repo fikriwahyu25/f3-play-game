@@ -2,10 +2,9 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<title>Video + Game Timer</title>
+<title>Video TikTok + Game Timer (Admin)</title>
 
 <style>
-
 /* BACKGROUND ANIMASI */
 body{
   font-family:Arial;
@@ -21,13 +20,13 @@ body{
   100%{background-position:0% 50%;}
 }
 
-/* LAYOUT UTAMA */
+/* LAYOUT FLEX */
 .container{
   display:flex;
   height:100vh;
 }
 
-/* AREA VIDEO */
+/* VIDEO AREA */
 .video-area{
   width:50%;
   padding:20px;
@@ -39,7 +38,7 @@ body{
   margin:auto;
 }
 
-/* AREA TIMER */
+/* TIMER AREA */
 .timer-area{
   width:50%;
   padding:20px;
@@ -138,13 +137,10 @@ button:hover{
   <!-- VIDEO TIKTOK -->
   <div class="video-area">
     <h2>🎬 Video</h2>
-
-    <!-- TikTok Embed -->
-    <blockquote class="tiktok-embed" cite="https://www.tiktok.com/@fwiprojec/video/7484581980235943175?is_from_webapp=1&sender_device=pc&web_id=7597273194713957896">
+    <blockquote class="tiktok-embed" cite="">
       <section> </section>
     </blockquote>
     <script async src="https://www.tiktok.com/embed.js"></script>
-
   </div>
 
   <!-- TIMER AREA -->
@@ -152,6 +148,10 @@ button:hover{
     <h2>🎮 Game Timer</h2>
 
     <div class="panel">
+      <h3>Admin Timer</h3>
+      Password Admin
+      <input id="adminPassword" type="password" placeholder="Masukkan password">
+      <br>
       Nama
       <input id="name">
       Jam
@@ -177,17 +177,13 @@ button:hover{
 </audio>
 
 <script>
-
-// --------------------------
 // DATA TIMER
-// --------------------------
 let timers = [];
 let interval = {};
 let lockedTimers = {};
+const ADMIN_PASS = "admin"; // Password admin huruf kecil semua
 
-// --------------------------
 // FORMAT WAKTU hh:mm:ss
-// --------------------------
 function format(sec){
   let h = Math.floor(sec/3600);
   let m = Math.floor((sec%3600)/60);
@@ -195,10 +191,14 @@ function format(sec){
   return String(h).padStart(2,'0')+":"+String(m).padStart(2,'0')+":"+String(s).padStart(2,'0');
 }
 
-// --------------------------
-// TAMBAH TIMER
-// --------------------------
+// TAMBAH TIMER (ADMIN)
 function addTimer(){
+  const password = document.getElementById("adminPassword").value;
+  if(password !== ADMIN_PASS){
+    alert("Hanya admin yang bisa menambahkan timer");
+    return;
+  }
+
   let name = document.getElementById("name").value || "Timer";
   let total = (parseInt(hour.value)||0)*3600 + (parseInt(minute.value)||0)*60 + (parseInt(second.value)||0);
   let id = Date.now();
@@ -214,17 +214,15 @@ function addTimer(){
     <div>
       <button onclick="startTimer(${id})">▶</button>
       <button onclick="pauseTimer(${id})">⏸</button>
-      <button onclick="resetTimer(${id})">🔄</button>
-      <button onclick="lockTimer(${id})">🔒</button>
-      <button onclick="deleteTimer(${id})">🗑</button>
+      <button onclick="resetTimer(${id}, '${password}')">🔄</button>
+      <button onclick="lockTimer(${id}, '${password}')">🔒</button>
+      <button onclick="deleteTimer(${id}, '${password}')">🗑</button>
     </div>
   `;
   timerContainer.appendChild(div);
 }
 
-// --------------------------
-// START TIMER
-// --------------------------
+// START TIMER (SEMUA BISA PLAY)
 function startTimer(id){
   let t = timers.find(x=>x.id==id);
   if(interval[id]) return;
@@ -245,39 +243,32 @@ function startTimer(id){
   },1000);
 }
 
-// --------------------------
-// PAUSE TIMER
-// --------------------------
+// PAUSE TIMER (SEMUA BISA PAUSE)
 function pauseTimer(id){
   clearInterval(interval[id]);
   interval[id] = null;
 }
 
-// --------------------------
-// RESET TIMER
-// --------------------------
-function resetTimer(id){
-  if(lockedTimers[id]){
-    alert("Timer sedang dikunci");
+// RESET TIMER (HANYA ADMIN)
+function resetTimer(id, password){
+  if(password !== ADMIN_PASS){
+    alert("Hanya admin yang bisa reset timer");
     return;
   }
-  let t = timers.find(x=>x.id==id);
+  let t = timers.find(x=>x.id == id);
   pauseTimer(id);
   t.total = t.start;
   document.getElementById("time"+id).innerText = format(t.total);
 
-  // stop effects
   let box = document.getElementById("timer"+id);
   box.classList.remove("finish");
   document.getElementById("time"+id).classList.remove("danger");
 }
 
-// --------------------------
-// DELETE TIMER
-// --------------------------
-function deleteTimer(id){
-  if(lockedTimers[id]){
-    alert("Timer sedang dikunci");
+// DELETE TIMER (HANYA ADMIN)
+function deleteTimer(id, password){
+  if(password !== ADMIN_PASS){
+    alert("Hanya admin yang bisa menghapus timer");
     return;
   }
   pauseTimer(id);
@@ -285,10 +276,12 @@ function deleteTimer(id){
   timers = timers.filter(t => t.id!=id);
 }
 
-// --------------------------
-// LOCK TIMER
-// --------------------------
-function lockTimer(id){
+// LOCK TIMER (HANYA ADMIN)
+function lockTimer(id, password){
+  if(password !== ADMIN_PASS){
+    alert("Hanya admin yang bisa mengunci timer");
+    return;
+  }
   let box = document.getElementById("timer"+id);
   if(!lockedTimers[id]){
     lockedTimers[id] = true;
@@ -299,15 +292,12 @@ function lockTimer(id){
   }
 }
 
-// --------------------------
-// STOP ALARM
-// --------------------------
+// STOP ALARM (SEMUA BISA)
 function stopAlarm(){
   let a = document.getElementById("alarm");
   a.pause();
   a.currentTime = 0;
 }
-
 </script>
 
 </body>
